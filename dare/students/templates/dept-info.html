@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Department Management</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+</head>
+<body ng-app="DeptApp" ng-controller="DeptController">
+    <h1>Department Management - Dept ID: {{ dept_id }}</h1>
+
+    <!-- Student Addition Form -->
+    <h2>Add Student</h2>
+    <form ng-submit="addStudent()">
+        <input type="text" ng-model="newStudent.name" placeholder="Student Name" required>
+        <input type="number" ng-model="newStudent.roll" placeholder="Roll Number" required>
+        <input type="email" ng-model="newStudent.mail" placeholder="Email" required>
+        <input type="number" ng-model="newStudent.sem" placeholder="Semester" required>
+        <select ng-model="student.guide" ng-options="guide.id as guide.name for guide in guides" required>
+            <option value="">Select the Guide</option>
+        </select>
+
+        <button type="submit">Add Student</button>
+    </form>
+
+    <!-- Student Listing -->
+    <h2>Students</h2>
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Roll</th>
+            <th>Semester</th>
+            <th>Email</th>
+            <th>Guide</th>
+            <th>Project</th>
+            <th>Actions</th>
+        </tr>
+        <tr ng-repeat="student in students">
+            <td><input ng-model="student.name"></td>
+            <td>[[student.roll]]</td>
+            <td><input ng-model="student.sem" type="number"></td>
+            <td><input ng-model="student.mail" type="email"></td>
+            <td>
+                <select ng-model="student.guide.id" ng-options="guide.id as guide.name for guide in guides" required >
+                </select>
+            </td>
+            <td><a href="[['/projects/'+student.active_project.id]]">visit</a></td>
+            <td>
+                <button ng-click="updateStudent(student)">Update</button>
+                <button ng-click="deleteStudent(student.id)">Delete</button>
+            </td>
+        </tr>
+    </table>
+
+
+    <!-- Guide Addition Form -->
+    <h2>Add Fee</h2>
+    <form ng-submit="addGuide()">
+        <input type="text" ng-model="newGuide.name" placeholder="Name" required>
+        <input type="email" ng-model="newGuide.email" placeholder="Email" required>
+        <input type="text" ng-model="newGuide.phone" placeholder="phone" required>
+        <button type="submit">Add Guide</button>
+    </form>
+
+     <!-- Fee Listing -->
+     <h2>Fees</h2>
+     <table border="1">
+         <tr>
+             <th>Name</th>
+             <th>Email</th>
+             <th>Phone</th>
+         </tr>
+         <tr ng-repeat="guide in guides">
+             <td><input ng-model="guide.name" type="text"></td>
+             <td><input ng-model="guide.email" type="email"></td>
+             <td><input ng-model="guide.phone" type="text"></td>
+             <td>
+                 <button ng-click="updateGuide(guide)">Update</button>
+                 <button ng-click="deleteGuide(guide.id)">Delete</button>
+             </td>
+         </tr>
+     </table>
+
+    <!-- Fee Addition Form -->
+    <h2>Add Fee</h2>
+    <form ng-submit="addFee()">
+        <input type="number" ng-model="newFee.sem" placeholder="Semester" required>
+        <input type="number" ng-model="newFee.fees" placeholder="Fees Amount" required>
+        <button type="submit">Add Fee</button>
+    </form>
+
+    <!-- Fee Listing -->
+    <h2>Fees</h2>
+    <table border="1">
+        <tr>
+            <th>Semester</th>
+            <th>Fees</th>
+            <th>Actions</th>
+        </tr>
+        <tr ng-repeat="fee in fees">
+            <td>[[ fee.sem ]]</td>
+            <td><input ng-model="fee.fees" type="number"></td>
+            <td>
+                <button ng-click="updateFee(fee)">Update</button>
+                <button ng-click="deleteFee(fee.id)">Delete</button>
+            </td>
+        </tr>
+    </table>
+
+    <script>
+        var app = angular.module('DeptApp', []);
+        app.config(function($interpolateProvider) {
+            $interpolateProvider.startSymbol('[[');
+            $interpolateProvider.endSymbol(']]');
+        });
+        app.config(['$httpProvider', function($httpProvider) {
+            $httpProvider.defaults.headers.common['X-CSRFToken'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        }]);
+
+        app.controller('DeptController', function($scope, $http, $location) {
+            var dept_api = "/api/depts/";
+            var student_api = "/api/students/";
+            var guide_api = "/api/guides/";
+            var fees_api = "/api/fees/";
+            $scope.students = [];
+            $scope.guides = [];
+            $scope.fees = [];
+            $scope.newStudent = {};
+            $scope.newGuide = {};
+            $scope.newFee = {};
+
+            
+            // Get department ID from URL
+            var pathParts = window.location.pathname.split('/');
+            $scope.dept_id = pathParts[pathParts.length - 2]; // Extract dept_id from URL
+
+            // Load students and fees
+            function loadDeptData() {
+                if (!$scope.dept_id) return;
+                
+                // Load students
+                $http.get(student_api + "?dept=" + $scope.dept_id).then(function(response) {
+                    $scope.students = response.data;
+                    console.log(response.data);
+                });
+
+                // Load fees
+                $http.get(fees_api + "?dept=" + $scope.dept_id).then(function(response) {
+                    $scope.fees = response.data;
+                });
+                // Load guides
+                $http.get(guide_api + "?dept=" + $scope.dept_id).then(function(response) {
+                    $scope.guides = response.data;
+                });
+
+            }
+
+            loadDeptData(); // Auto-load data when the page loads
+
+            // Add Student
+            $scope.addStudent = function() {
+                $scope.newStudent.dept = $scope.dept_id;
+                $http.post(student_api, $scope.newStudent).then(function(response) {
+                    $scope.students.push(response.data);
+                    $scope.newStudent = {};
+                });
+            };
+
+            // Update Student
+            $scope.updateStudent = function(student) {
+                $http.put(student_api + student.id + "/", student).then(function() {
+                    alert("Student Updated!");
+                });
+            };
+
+            // Delete Student
+            $scope.deleteStudent = function(id) {
+                if (confirm("Are you sure?")) {
+                    $http.delete(student_api + id + "/").then(function() {
+                        loadDeptData();
+                    });
+                }
+            };
+            
+            // Add Guide
+            $scope.addGuide = function() {
+                $scope.newGuide.dept = $scope.dept_id;
+                $http.post(guide_api, $scope.newGuide).then(function(response) {
+                    $scope.guides.push(response.data);
+                    $scope.newGuide = {};
+                });
+            };
+
+            // Update Guide
+            $scope.updateGuide = function(guide) {
+                $http.put(guide_api + guide.id + "/", guide).then(function() {
+                    alert("guide Updated!");
+                });
+            };
+
+            // Delete Guide
+            $scope.deleteGuide = function(id) {
+                if (confirm("Are you sure?")) {
+                    $http.delete(guide_api + id + "/").then(function() {
+                        loadDeptData();
+                    });
+                }
+            };
+
+            // Add Fee
+            $scope.addFee = function() {
+                $scope.newFee.dept = $scope.dept_id;
+                $http.post(fees_api, $scope.newFee).then(function(response) {
+                    $scope.fees.push(response.data);
+                    $scope.newFee = {};
+                });
+            };
+
+            // Update Fee
+            $scope.updateFee = function(fee) {
+                $http.put(fees_api + fee.id + "/", fee).then(function() {
+                    alert("Fee Updated!");
+                });
+            };
+
+            // Delete Fee
+            $scope.deleteFee = function(id) {
+                if (confirm("Are you sure?")) {
+                    $http.delete(fees_api + id + "/").then(function() {
+                        loadDeptData();
+                    });
+                }
+            };
+        });
+    </script>
+</body>
+</html>

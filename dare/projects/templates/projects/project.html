@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Management</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+</head>
+<body ng-app="ProjectApp" ng-controller="ProjectController">
+    <h1>Project Management - Project ID: [[ project_id ]]</h1>
+
+    <!-- Project Details -->
+    <h2>Project Details</h2>
+    <p><strong>Title:</strong> [[ project.title ]]</p>
+    <p><strong>Guide:</strong> [[ project.guide.name ]]</p>
+    <p><strong>Current:</strong> [[ project.current ? 'Yes' : 'No' ]]</p>
+    <p><strong>Guide Approved:</strong> [[ project.guide_approved ? 'Yes' : 'No' ]]</p>
+    <p><strong>Project File:</strong> <a ng-if="project.file_link" href="[[ project.file_link ]]" target="_blank">View</a></p>
+
+    <!-- Synopsis Section -->
+    <h2>Synopsis</h2>
+    
+    <!-- Redirect to External Upload Page -->
+    <a href="https://external-upload.com/synopsis?project=[[ project_id ]]" target="_blank">
+        <button>Upload New Synopsis</button>
+    </a>
+
+    <table border="1">
+        <tr>
+            <th>File Link</th>
+            <th>Uploaded At</th>
+            <th>Guide Approved</th>
+            <th>Actions</th>
+            <!-- if the user was guide then show accept synopsis button else dont -->
+        </tr>
+        <tr ng-repeat="synopsis in synopses">
+            <td><a href="[[ synopsis.file_link ]]" target="_blank">[[ synopsis.file_link ]]</a></td>
+            <td>[[ synopsis.uploaded_at ]]</td>
+            <td>[[ synopsis.guide_approved ? 'Yes' : 'No' ]]</td> 
+            <td>
+                <button ng-click="deleteSynopsis(synopsis.id)">Delete</button>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Project File Upload (Only if synopsis is guide-approved) -->
+    <div ng-if="canUploadProject()">
+        <h2>Upload Project File</h2>
+        <a href="https://external-upload.com/project?project=[[ project_id ]]" target="_blank">
+            <button>Upload Project File</button>
+        </a>
+    </div>
+
+    <!-- Evaluator CRUD -->
+    <h2>Evaluators</h2>
+    <form ng-submit="addEvaluator()">
+        <input type="text" ng-model="newEvaluator.name" placeholder="Name" required>
+        <input type="email" ng-model="newEvaluator.email" placeholder="Email" required>
+        <input type="text" ng-model="newEvaluator.phone" placeholder="Phone" required>
+        <button type="submit">Add Evaluator</button>
+    </form>
+
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Actions</th>
+        </tr>
+        <tr ng-repeat="evaluator in evaluators">
+            <td>[[ evaluator.name ]]</td>
+            <td>[[ evaluator.email ]]</td>
+            <td>[[ evaluator.phone ]]</td>
+            <td>
+                <button ng-click="deleteEvaluator(evaluator.id)">Delete</button>
+            </td>
+        </tr>
+    </table>
+
+    <script>
+        var app = angular.module('ProjectApp', []);
+        app.config(function($interpolateProvider) {
+            $interpolateProvider.startSymbol('[[');
+            $interpolateProvider.endSymbol(']]');
+        });
+        app.config(['$httpProvider', function($httpProvider) {
+            $httpProvider.defaults.headers.common['X-CSRFToken'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        }]);
+
+        app.controller('ProjectController', function($scope, $http) {
+            var project_api = "/api/projects/";
+            var synopsis_api = "/api/synopsis/";
+            var evaluator_api = "/api/evaluators/";
+
+            var pathParts = window.location.pathname.split('/');
+            $scope.project_id = pathParts[pathParts.length - 2]; // Extract project_id from URL
+            $scope.synopses = [];
+            $scope.evaluators = [];
+
+            // Load project details
+            function loadProject() {
+                $http.get(project_api + $scope.project_id + "/").then(function(response) {
+                    $scope.project = response.data;
+                });
+            }
+
+            // Load synopses
+            function loadSynopses() {
+                $http.get(synopsis_api + "?project=" + $scope.project_id).then(function(response) {
+                    $scope.synopses = response.data;
+                });
+            }
+
+            // Load evaluators
+            function loadEvaluators() {
+                $http.get(evaluator_api + "?project=" + $scope.project_id).then(function(response) {
+                    $scope.evaluators = response.data;
+                });
+            }
+
+            loadProject();
+            loadSynopses();
+            loadEvaluators();
+
+            // Delete Synopsis
+            $scope.deleteSynopsis = function(id) {
+                if (confirm("Are you sure?")) {
+                    $http.delete(synopsis_api + id + "/").then(function() {
+                        loadSynopses();
+                    });
+                }
+            };
+
+            // Delete Evaluator
+            $scope.deleteEvaluator = function(id) {
+                if (confirm("Are you sure?")) {
+                    $http.delete(evaluator_api + id + "/").then(function() {
+                        loadEvaluators();
+                    });
+                }
+            };
+
+            // Check if Project Upload is Allowed
+            $scope.canUploadProject = function() {
+                return $scope.synopses.some(s => s.guide_approved);
+            };
+        });
+    </script>
+</body>
+</html>

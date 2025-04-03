@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Department Management</title>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.3/angular.min.js" integrity="sha512-KZmyTq3PLx9EZl0RHShHQuXtrvdJ+m35tuOiwlcZfs/rE7NZv29ygNA8SFCkMXTnYZQK2OX0Gm2qKGfvWEtRXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        var app = angular.module('DeptApp', []);
+        app.config(function($interpolateProvider) {
+            $interpolateProvider.startSymbol('[[');
+            $interpolateProvider.endSymbol(']]');
+        });
+        app.config(['$httpProvider', function($httpProvider) {
+            $httpProvider.defaults.headers.common['X-CSRFToken'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        }]);
+    
+        app.controller('DeptController', function($scope, $http) {
+            var api_url = "/api/depts/";
+    
+            $scope.depts = [];
+            $scope.newDept = {};
+            $scope.editing = false;
+    
+            $scope.getDepts = function() {
+                $http.get(api_url).then(function(response) {
+                    $scope.depts = response.data;
+                });
+            };
+    
+            $scope.addDept = function() {
+                $http.post(api_url, $scope.newDept).then(function(response) {
+                    $scope.depts.push(response.data);
+                    $scope.newDept = {};
+                });
+            };
+    
+            $scope.editDept = function(dept) {
+                $scope.newDept = angular.copy(dept);
+                $scope.editing = true;
+            };
+    
+            $scope.updateDept = function() {
+                $http.put(api_url + $scope.newDept.id + "/", $scope.newDept).then(function(response) {
+                    $scope.getDepts();
+                    $scope.newDept = {};
+                    $scope.editing = false;
+                });
+            };
+    
+            $scope.deleteDept = function(id) {
+                if(confirm("Are you sure you want to delete this department?")) {
+                    $http.delete(api_url + id + "/").then(function(response) {
+                        $scope.getDepts();
+                    });
+                }
+            };
+
+            $scope.redirect  = (id) => {
+                // console.log(id);
+                window.location.href = "/department/"+id;
+            }
+    
+            $scope.getDepts();
+        });
+    </script>
+    
+</head>
+<body ng-app="DeptApp" ng-controller="DeptController">
+    <h2>Department Management</h2>
+
+    <form ng-submit="editing ? updateDept() : addDept()">
+        <input type="text" ng-model="newDept.name" placeholder="Department Name" required>
+        <input type="number" ng-model="newDept.min_years" placeholder="Min Years" required>
+        <input type="number" ng-model="newDept.max_years" placeholder="Max Years" required>
+        <button type="submit">[[ editing ? 'Update' : 'Add' ]] Department</button>
+        <button type="button" ng-click="newDept = {}; editing = false" ng-show="editing">Cancel</button>
+    </form>
+
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Min Years</th>
+            <th>Max Years</th>
+            <th>Actions</th>
+        </tr>
+        <tr ng-repeat="dept in depts" ng-click="redirect(dept.id)">
+            <td>[[ dept.name ]]</td>
+            <td>[[ dept.min_years ]]</td>
+            <td>[[ dept.max_years ]]</td>
+            <td>
+                <button ng-click="editDept(dept)">Edit</button>
+                <button ng-click="deleteDept(dept.id)">Delete</button>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
