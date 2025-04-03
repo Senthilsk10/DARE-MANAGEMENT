@@ -8,16 +8,13 @@ class Project(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     guide = models.ForeignKey(Guide, on_delete=models.CASCADE)
     title  = models.CharField(max_length=200,null=False,blank=False)
-    file_link = models.URLField(null=True)
+    file_link = models.CharField(max_length=200,null=True,blank=True)
     uploaded_at = models.DateTimeField( auto_now_add=True)
     current = models.BooleanField(default=True)
     guide_approved = models.BooleanField(default=False)
     closed = models.BooleanField(default=False)
     
     # while saving if the link is changing from old to new then update it to Link model 
-    def change_link(self):
-        pass
-
     def save(self,*args,**kwargs):
         obj,created = Link.objects.get_or_create(project=self)
         print(self.pk,self.id)
@@ -65,14 +62,8 @@ class Viva(models.Model):
 
 class Synopsis(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    file_link = models.URLField()
+    file_link = models.CharField(max_length=200,null=False,blank=False)
+    title  = models.CharField(max_length=200,null=False,blank=False)
     uploaded_at = models.DateTimeField(auto_now_add=True)
     current = models.BooleanField(default=True)
     guide_approved = models.BooleanField(default=False)
-
-# class Coordinator(models.Model):
-#     commitee = models.ManyToManyField(Evaluator)
-#     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-
-#     def available_commitee(self):
-#         return Evaluator.objects.exclude(id__in=[1,2])

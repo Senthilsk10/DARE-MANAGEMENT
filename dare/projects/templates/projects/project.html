@@ -22,7 +22,7 @@
     <h2>Synopsis</h2>
     
     <!-- Redirect to External Upload Page -->
-    <a href="https://external-upload.com/synopsis?project=[[ project_id ]]" target="_blank">
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSd8KcVJTqYgAJfZyNf8SUNRRf-kO7f7syfYe8IwLD1u6Z7nlQ/viewform?usp=pp_url&entry.14545404=[[project.encrypted]]" target="_blank">
         <button>Upload New Synopsis</button>
     </a>
 
@@ -35,7 +35,7 @@
             <!-- if the user was guide then show accept synopsis button else dont -->
         </tr>
         <tr ng-repeat="synopsis in synopses">
-            <td><a href="[[ synopsis.file_link ]]" target="_blank">[[ synopsis.file_link ]]</a></td>
+            <td><a href="https://drive.google.com/file/d/[[ synopsis.file_link ]]/view" target="_blank">[[ synopsis.file_link ]]</a></td>
             <td>[[ synopsis.uploaded_at ]]</td>
             <td>[[ synopsis.guide_approved ? 'Yes' : 'No' ]]</td> 
             <td>
@@ -47,7 +47,7 @@
     <!-- Project File Upload (Only if synopsis is guide-approved) -->
     <div ng-if="canUploadProject()">
         <h2>Upload Project File</h2>
-        <a href="https://external-upload.com/project?project=[[ project_id ]]" target="_blank">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSd8KcVJTqYgAJfZyNf8SUNRRf-kO7f7syfYe8IwLD1u6Z7nlQ/viewform?usp=pp_url&entry.14545404=[[project.encrypted]]" target="_blank">
             <button>Upload Project File</button>
         </a>
     </div>
