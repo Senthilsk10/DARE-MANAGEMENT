@@ -10,7 +10,8 @@ router.register(r'evaluators', EvaluatorViewSet)
 
 urlpatterns = [
     path('api/', include(router.urls)),
-    path("webhook/synopsis",synopsis_webhook,name="project-files"),
+    path("webhook/synopsis",synopsis_webhook,name="synopsis-files"),
+    path("webhook/project",project_webhook,name="project-files"),
     path('project/<int:project_id>/', lambda request, project_id: render(request, "projects/project.html", {"project_id": project_id})),
     path('view/file/<str:file_id>', lambda request, file_id: render(request, "iframe.html", {"file_id": file_id})),
 ]

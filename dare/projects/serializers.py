@@ -15,9 +15,17 @@ class StudentSerializer(ModelSerializer):
         fields = '__all__'
 
 class ProjectSerializer(ModelSerializer):
-    encrypted = SerializerMethodField() 
-    student = PrimaryKeyRelatedField(queryset=Student.objects.all())
-    guide = PrimaryKeyRelatedField(queryset=Guide.objects.all())
+    encrypted = SerializerMethodField()
+    # Use ID for input (write) but full object for output (read)
+    student = PrimaryKeyRelatedField(
+        queryset=Student.objects.all()
+    )
+    student_detail = StudentSerializer(source="student", read_only=True)
+
+    guide = PrimaryKeyRelatedField(
+        queryset=Guide.objects.all()
+    )
+    guide_detail = GuideSerializer(source="guide", read_only=True)
     class Meta:
         model = Project
         fields = '__all__'

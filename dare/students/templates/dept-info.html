@@ -42,7 +42,7 @@
             <td><input ng-model="student.sem" type="number"></td>
             <td><input ng-model="student.mail" type="email"></td>
             <td>
-                <select ng-model="student.guide.id" ng-options="guide.id as guide.name for guide in guides" required >
+                <select ng-model="student.guide" ng-options="guide.id as guide.name for guide in guides" required >
                 </select>
             </td>
             <td><a href="[['/projects/'+student.active_project.id]]">visit</a></td>

@@ -20,7 +20,10 @@ class FeesSerializer(serializers.ModelSerializer):
 
 class StudentSerializer(serializers.ModelSerializer):
     active_project = serializers.SerializerMethodField()
-    guide = serializers.PrimaryKeyRelatedField(queryset=Guide.objects.all())
+    guide = serializers.PrimaryKeyRelatedField(
+        queryset=Guide.objects.all()
+    )
+    guide_detail = GuideSerializer(source="guide", read_only=True)
     class Meta:
         model = Student
         fields = '__all__'

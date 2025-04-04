@@ -30,6 +30,26 @@ def synopsis_webhook(request):
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
+@csrf_exempt
+def project_webhook(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+            # print(data)
+            decrypted = json.loads(cipher.decrypt(data["form-details"]).decode())
+            # print(decrypted)
+            # print(type(decrypted))
+            pr_id = decrypted.get('project_id')
+            project = Project.objects.get(id=pr_id)
+            link = data['upload your Project PDF file'][0]
+            project.file_link = link
+            project.save()
+            return JsonResponse({"message": "success"}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format"}, status=400)
+
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer

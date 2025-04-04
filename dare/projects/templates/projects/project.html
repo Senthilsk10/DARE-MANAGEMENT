@@ -13,10 +13,10 @@
     <!-- Project Details -->
     <h2>Project Details</h2>
     <p><strong>Title:</strong> [[ project.title ]]</p>
-    <p><strong>Guide:</strong> [[ project.guide.name ]]</p>
+    <p><strong>Guide:</strong> [[ project.student_detail.guide.name ]]</p>
     <p><strong>Current:</strong> [[ project.current ? 'Yes' : 'No' ]]</p>
     <p><strong>Guide Approved:</strong> [[ project.guide_approved ? 'Yes' : 'No' ]]</p>
-    <p><strong>Project File:</strong> <a ng-if="project.file_link" href="[[ project.file_link ]]" target="_blank">View</a></p>
+    <p><strong>Project File:</strong> <a ng-if="project.file_link" href="https://drive.google.com/file/d/[[ project.file_link ]]/view" target="_blank">View</a></p>
 
     <!-- Synopsis Section -->
     <h2>Synopsis</h2>
@@ -28,6 +28,7 @@
 
     <table border="1">
         <tr>
+            <th>Title</th>
             <th>File Link</th>
             <th>Uploaded At</th>
             <th>Guide Approved</th>
@@ -35,11 +36,13 @@
             <!-- if the user was guide then show accept synopsis button else dont -->
         </tr>
         <tr ng-repeat="synopsis in synopses">
-            <td><a href="https://drive.google.com/file/d/[[ synopsis.file_link ]]/view" target="_blank">[[ synopsis.file_link ]]</a></td>
-            <td>[[ synopsis.uploaded_at ]]</td>
+            <td>[[synopsis.title]]</td>
+            <td><a href="https://drive.google.com/file/d/[[ synopsis.file_link ]]/view" target="_blank">Access File Here</a></td>
+            <td>[[ synopsis.uploaded_at | date: 'MMMM dd, yyyy hh:mm a' ]]</td>
             <td>[[ synopsis.guide_approved ? 'Yes' : 'No' ]]</td> 
             <td>
                 <button ng-click="deleteSynopsis(synopsis.id)">Delete</button>
+                <button ng-click="approveSynopsis(synopsis)">Approve</button>
             </td>
         </tr>
     </table>
@@ -47,7 +50,7 @@
     <!-- Project File Upload (Only if synopsis is guide-approved) -->
     <div ng-if="canUploadProject()">
         <h2>Upload Project File</h2>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSd8KcVJTqYgAJfZyNf8SUNRRf-kO7f7syfYe8IwLD1u6Z7nlQ/viewform?usp=pp_url&entry.14545404=[[project.encrypted]]" target="_blank">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeKHA3GI-HsAhGBZN3BFgo-2Gz_nU4pLKUKkU41kzrufZGsvw/viewform?usp=pp_url&entry.14545404=[[project.encrypted]]" target="_blank">
             <button>Upload Project File</button>
         </a>
     </div>
@@ -127,6 +130,15 @@
             $scope.deleteSynopsis = function(id) {
                 if (confirm("Are you sure?")) {
                     $http.delete(synopsis_api + id + "/").then(function() {
+                        loadSynopses();
+                    });
+                }
+            };
+            // Delete Synopsis
+            $scope.approveSynopsis = function(synopsis) {
+                if (confirm("You are about to allow the synopsis,are you sure?")) {
+                    synopsis.guide_approved = true;
+                    $http.put(synopsis_api + synopsis.id + "/",synopsis).then(function() {
                         loadSynopses();
                     });
                 }
