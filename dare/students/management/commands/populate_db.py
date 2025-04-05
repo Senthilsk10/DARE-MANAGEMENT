@@ -30,19 +30,19 @@ class Command(BaseCommand):
         project1 = Project.objects.create(student=student1, guide=guide1, file_link="http://example.com/project1",title="My PHD Project")
         project2 = Project.objects.create(student=student2, guide=guide2, file_link="http://example.com/project2",title="My PHD Project")
         
-        # Create Evaluators
-        evaluator1 = Evaluator.objects.create(project=project1,name="Prof. Xavier", email="xavier@example.com", phone="1111111111", foreign_viva=False)
-        evaluator2 = Evaluator.objects.create(project=project1,name="Dr. Logan", email="logan@example.com", phone="2222222221", foreign_viva=True)
-        evaluator1 = Evaluator.objects.create(project=project1,name="Prof. Joe", email="joe@example.com", phone="1111111112", foreign_viva=False)
-        evaluator2 = Evaluator.objects.create(project=project1,name="Dr. Tony", email="Tony@example.com", phone="2222222222", foreign_viva=True)
-        evaluator1 = Evaluator.objects.create(project=project1,name="Prof. May", email="may@example.com", phone="1111111113", foreign_viva=False)
-        evaluator2 = Evaluator.objects.create(project=project1,name="Dr. Reed", email="reed@example.com", phone="2222222223", foreign_viva=True)
-        evaluator1 = Evaluator.objects.create(project=project1,name="Prof. Peter", email="peter@example.com", phone="1111111114", foreign_viva=False)
-        evaluator2 = Evaluator.objects.create(project=project1,name="Dr. Francis", email="francis@example.com", phone="2222222224", foreign_viva=True)
+        # # Create Evaluators
+        # evaluator1 = Evaluator.objects.create(project=project1,name="Prof. Xavier", email="xavier@example.com", phone="1111111111", foreign_viva=False)
+        # evaluator2 = Evaluator.objects.create(project=project1,name="Dr. Logan", email="logan@example.com", phone="2222222221", foreign_viva=True)
+        # evaluator1 = Evaluator.objects.create(project=project1,name="Prof. Joe", email="joe@example.com", phone="1111111112", foreign_viva=False)
+        # evaluator2 = Evaluator.objects.create(project=project1,name="Dr. Tony", email="Tony@example.com", phone="2222222222", foreign_viva=True)
+        # evaluator1 = Evaluator.objects.create(project=project1,name="Prof. May", email="may@example.com", phone="1111111113", foreign_viva=False)
+        # evaluator2 = Evaluator.objects.create(project=project1,name="Dr. Reed", email="reed@example.com", phone="2222222223", foreign_viva=True)
+        # evaluator1 = Evaluator.objects.create(project=project1,name="Prof. Peter", email="peter@example.com", phone="1111111114", foreign_viva=False)
+        # evaluator2 = Evaluator.objects.create(project=project1,name="Dr. Francis", email="francis@example.com", phone="2222222224", foreign_viva=True)
         
-        # Create Synopses
-        Synopsis.objects.create(project=project1, file_link="http://example.com/synopsis1")
-        Synopsis.objects.create(project=project2, file_link="http://example.com/synopsis2")
+        # # Create Synopses
+        # Synopsis.objects.create(project=project1, file_link="http://example.com/synopsis1")
+        # Synopsis.objects.create(project=project2, file_link="http://example.com/synopsis2")
         
         # Create Collections
         fee1 = Fees.objects.get(dept=cs_dept, sem=1)

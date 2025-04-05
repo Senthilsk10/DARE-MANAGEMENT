@@ -85,10 +85,10 @@
             <th>Max Years</th>
             <th>Actions</th>
         </tr>
-        <tr ng-repeat="dept in depts" ng-click="redirect(dept.id)">
-            <td>[[ dept.name ]]</td>
-            <td>[[ dept.min_years ]]</td>
-            <td>[[ dept.max_years ]]</td>
+        <tr ng-repeat="dept in depts">
+            <td ng-click="redirect(dept.id)">[[ dept.name ]]</td>
+            <td ng-click="redirect(dept.id)">[[ dept.min_years ]]</td>
+            <td ng-click="redirect(dept.id)">[[ dept.max_years ]]</td>
             <td>
                 <button ng-click="editDept(dept)">Edit</button>
                 <button ng-click="deleteDept(dept.id)">Delete</button>

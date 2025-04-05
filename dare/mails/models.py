@@ -9,19 +9,27 @@ class Mail(models.Model):
     sent_at = models.DateTimeField(auto_now_add=True)
     to = models.ForeignKey(Evaluator, on_delete=models.CASCADE)
     seen = models.BooleanField(default=False)
-    subject = models.CharField(max_length=200,null=False,default="Not Mentioned")
+    subject = models.TextField(null=False,default="Not Mentioned")
+    message_id = models.CharField(max_length=40,null=False)
+    
+    def __str__(self):
+        return f"{self.content}"
 
 class Response(models.Model):
     mail = models.ForeignKey(Mail, on_delete=models.CASCADE) # reply mail linking (work on what if we dont get mail and the user initiated it first)
     evaluator = models.ForeignKey(Evaluator, on_delete=models.CASCADE)
     response = models.TextField() # if subject is modify then get the required modfication, and file link from the repsonse using parse_function 
     attachments = models.JSONField(help_text="Attachment URLs stored as JSON list",default=list)
-    subject = models.CharField(max_length=200,null=False,default="Not Mentioned") # handle this in uploading read emails from gsheets aasit raises not null constraint (if email does not have subject then it was not our predifined version)
-
+    subject = models.TextField(null=False,default="Not Mentioned") # handle this in uploading read emails from gsheets aasit raises not null constraint (if email does not have subject then it was not our predifined version)
+    message_id = models.CharField(max_length=40,null=False)
+    
     # to Implement : 
     # a function that uses subject and response to parse the required data from the mail
     def parse_response(self):
         pass
+    
+    def __str__(self):
+        return f"{self.response}"
 
 class MailType(models.TextChoices):
     APPROACH = 'Approach', 'Approach Email to viva coordinators'

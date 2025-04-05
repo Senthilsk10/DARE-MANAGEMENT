@@ -47,4 +47,4 @@ class SynopsisSerializer(ModelSerializer):
 class EvaluatorSerializer(ModelSerializer):
     class Meta:
         model = Evaluator
-        fields = '__all__'
+        exclude = ('status','last_sent_at','retry')

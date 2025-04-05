@@ -15,7 +15,7 @@
     <p><strong>Title:</strong> [[ project.title ]]</p>
     <p><strong>Guide:</strong> [[ project.student_detail.guide.name ]]</p>
     <p><strong>Current:</strong> [[ project.current ? 'Yes' : 'No' ]]</p>
-    <p><strong>Guide Approved:</strong> [[ project.guide_approved ? 'Yes' : 'No' ]]</p>
+    <p><strong>Guide Approved:</strong> [[ project.guide_approved ? 'Yes' : 'No' ]] <button ng-click="approveProject()">[[project.guide_approved?"Disapprove":"Approve"]]</button></p>
     <p><strong>Project File:</strong> <a ng-if="project.file_link" href="https://drive.google.com/file/d/[[ project.file_link ]]/view" target="_blank">View</a></p>
 
     <!-- Synopsis Section -->
@@ -55,32 +55,36 @@
         </a>
     </div>
 
-    <!-- Evaluator CRUD -->
-    <h2>Evaluators</h2>
-    <form ng-submit="addEvaluator()">
-        <input type="text" ng-model="newEvaluator.name" placeholder="Name" required>
-        <input type="email" ng-model="newEvaluator.email" placeholder="Email" required>
-        <input type="text" ng-model="newEvaluator.phone" placeholder="Phone" required>
-        <button type="submit">Add Evaluator</button>
-    </form>
+    <div ng-if="project.guide_approved">    
+        <!-- Evaluator CRUD -->
+        <h2>Evaluators</h2>
+        <form ng-submit="addEvaluator()">
+            <input type="text" ng-model="newEvaluator.name" placeholder="Name" required>
+            <input type="email" ng-model="newEvaluator.email" placeholder="Email" required>
+            <input type="text" ng-model="newEvaluator.phone" placeholder="Phone" required>
+            <label>Foreign Viva</label>
+            <input type="checkbox" ng-model="newEvaluator.foreign_viva" required>
+            <button type="submit">Add Evaluator</button>
+        </form>
 
-    <table border="1">
-        <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Actions</th>
-        </tr>
-        <tr ng-repeat="evaluator in evaluators">
-            <td>[[ evaluator.name ]]</td>
-            <td>[[ evaluator.email ]]</td>
-            <td>[[ evaluator.phone ]]</td>
-            <td>
-                <button ng-click="deleteEvaluator(evaluator.id)">Delete</button>
-            </td>
-        </tr>
-    </table>
-
+        <table border="1">
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Actions</th>
+            </tr>
+            <tr ng-repeat="evaluator in evaluators">
+                <td>[[ evaluator.name ]]</td>
+                <td>[[ evaluator.email ]]</td>
+                <td>[[ evaluator.phone ]]</td>
+                <td>[[ evaluator.foreign_viva?"Foreign Evaluator":"indian Evaluator" ]]</td>
+                <td>
+                    <button ng-click="deleteEvaluator(evaluator.id)">Delete</button>
+                </td>
+            </tr>
+        </table>
+    </div>
     <script>
         var app = angular.module('ProjectApp', []);
         app.config(function($interpolateProvider) {
@@ -143,6 +147,14 @@
                     });
                 }
             };
+            $scope.approveProject = function() {
+                if (confirm("You are about to change the Project status,are you sure?")) {
+                    $scope.project.guide_approved = !$scope.project.guide_approved;
+                    $http.put(project_api + $scope.project.id + "/",$scope.project).then(function() {
+                        loadProject();
+                    });
+                }
+            };
 
             // Delete Evaluator
             $scope.deleteEvaluator = function(id) {
@@ -157,6 +169,12 @@
             $scope.canUploadProject = function() {
                 return $scope.synopses.some(s => s.guide_approved);
             };
+
+            $scope.canSelectEvaluator = function(){
+                // if the evaluators was a 5 from indian and 5 from foreign we start the process ,
+                // if any mail log attached to the project was found for approaching the then we dont have to show the start process
+
+            }
         });
     </script>
 </body>

@@ -45,7 +45,7 @@
                 <select ng-model="student.guide" ng-options="guide.id as guide.name for guide in guides" required >
                 </select>
             </td>
-            <td><a href="[['/projects/'+student.active_project.id]]">visit</a></td>
+            <td><a href="[['/project/'+student.active_project.id]]">visit</a></td>
             <td>
                 <button ng-click="updateStudent(student)">Update</button>
                 <button ng-click="deleteStudent(student.id)">Delete</button>
@@ -55,7 +55,7 @@
 
 
     <!-- Guide Addition Form -->
-    <h2>Add Fee</h2>
+    <h2>Add Guides</h2>
     <form ng-submit="addGuide()">
         <input type="text" ng-model="newGuide.name" placeholder="Name" required>
         <input type="email" ng-model="newGuide.email" placeholder="Email" required>
