@@ -14,7 +14,21 @@ class Project(models.Model):
     current = models.BooleanField(default=True)
     guide_approved = models.BooleanField(default=False)
     closed = models.BooleanField(default=False)
-    
+    referel_id = models.CharField(max_length=20, unique=True, blank=True, null=True)  # now stored in DB
+
+    def generate_referel_id(self):
+        student_code = ''.join(filter(str.isalpha, self.student.name[:2].upper())) if self.student and hasattr(self.student, 'name') else "ST"
+        guide_code = ''.join(filter(str.isalpha, self.guide.name[:1].upper())) if self.guide and hasattr(self.guide, 'name') else "G"
+        alpha_part = (student_code + guide_code).ljust(3, 'X')  # Ensure 3-letter code
+
+        hash_part = str(self.id % 10000).zfill(4) if self.id else "0000"
+        return f"{alpha_part}-{hash_part}"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)  # Save first to generate ID
+        if not self.referel_id:
+            self.referel_id = self.generate_referel_id()
+            super().save(update_fields=['referel_id']) 
     # while saving if the link is changing from old to new then update it to Link model 
     # def save(self,*args,**kwargs):
     #     obj,created = Link.objects.get_or_create(project=self)
@@ -69,7 +83,7 @@ class Evaluator(models.Model):
 
     project = models.ForeignKey('Project', on_delete=models.CASCADE)
     priority = models.IntegerField(choices=PriorityType.choices)
-    last_sent_at = models.DateTimeField(auto_now_add=True)
+    last_sent_at = models.DateTimeField(null=True)
     status = models.CharField(
         max_length=15,
         choices=StatusType.choices,
@@ -82,15 +96,16 @@ class Evaluator(models.Model):
     )
 
     is_viva = models.BooleanField(default=False)
+    
 
     class Meta:
-        unique_together = ('project', 'is_viva', 'foreign_viva')  # enforce 1 foreign + 1 non-foreign viva
-        constraints = [
-            models.UniqueConstraint(
-                fields=['project', 'priority', 'foreign_viva'],
-                name='unique_priority_per_project_foreign_flag'
-            )
-        ]
+        unique_together = ('project', 'email')  # enforce 1 foreign + 1 non-foreign viva
+    #     constraints = [
+    #         models.UniqueConstraint(
+    #             fields=['project', 'priority', 'foreign_viva'],
+    #             name='unique_priority_per_project_foreign_flag'
+    #         )
+    #     ]
 
     def __str__(self):
         return f"{self.name} ({self.project.id})"
@@ -102,3 +117,7 @@ class Synopsis(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
     current = models.BooleanField(default=True)
     guide_approved = models.BooleanField(default=False)
+    
+    # before saving verify you having single current object enabled no two synopsis should be same 
+    # for that get all the synopsis from this project and set it to false and then save the currrent one with true
+    # def save():

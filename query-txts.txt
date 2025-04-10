@@ -1,0 +1,127 @@
+Microsoft Windows [Version 10.0.22621.4317]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\DELL>mysql -u root -p
+Enter password: ************
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 19
+Server version: 8.0.36 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2024, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> use dare
+Database changed
+mysql> select * from projects_evaluators;
+ERROR 1146 (42S02): Table 'dare.projects_evaluators' doesn't exist
+mysql> select * from projects_evaluator;
++----+-------------------------+-------------------------------+--------------+-------------+----------+----------------------------+--------+-------+---------+------------+
+| id | name                    | email                         | foreign_viva | phone       | priority | last_sent_at               | status | retry | is_viva | project_id |
++----+-------------------------+-------------------------------+--------------+-------------+----------+----------------------------+--------+-------+---------+------------+
+|  9 | Dr. Smith (Foreign)     | foreign1_project1@example.com |            1 | +1234567810 |        1 | 2025-04-08 17:04:45.030961 | IDLE   |     0 |       0 |          1 |
+| 10 | Prof. Johnson (Foreign) | foreign2_project1@example.com |            1 | +1234567820 |        2 | 2025-04-08 17:04:45.075629 | IDLE   |     0 |       0 |          1 |
+| 11 | Dr. Williams (Foreign)  | foreign3_project1@example.com |            1 | +1234567830 |        3 | 2025-04-08 17:04:45.123421 | IDLE   |     0 |       0 |          1 |
+| 12 | Prof. Brown (Foreign)   | foreign4_project1@example.com |            1 | +1234567840 |        4 | 2025-04-08 17:04:45.171565 | IDLE   |     0 |       0 |          1 |
+| 13 | Dr. Davis (Foreign)     | foreign5_project1@example.com |            1 | +1234567850 |        5 | 2025-04-08 17:04:45.215452 | IDLE   |     0 |       0 |          1 |
+| 14 | Prof. Miller (Local)    | local1_project1@example.com   |            0 | +9876543210 |        1 | 2025-04-08 17:04:45.279881 | IDLE   |     0 |       0 |          1 |
+| 15 | Dr. Wilson (Local)      | local2_project1@example.com   |            0 | +9876543220 |        2 | 2025-04-08 17:04:45.311696 | IDLE   |     0 |       0 |          1 |
+| 16 | Prof. Moore (Local)     | local3_project1@example.com   |            0 | +9876543230 |        3 | 2025-04-08 17:04:45.357325 | IDLE   |     0 |       0 |          1 |
+| 17 | Dr. Taylor (Local)      | local4_project1@example.com   |            0 | +9876543240 |        4 | 2025-04-08 17:04:45.405898 | IDLE   |     0 |       0 |          1 |
+| 18 | Prof. Anderson (Local)  | local5_project1@example.com   |            0 | +9876543250 |        5 | 2025-04-08 17:04:45.456010 | IDLE   |     0 |       0 |          1 |
+| 19 | Dr. White (Foreign)     | foreign1_project2@example.com |            1 | +1234567811 |        1 | 2025-04-08 17:04:45.512601 | IDLE   |     0 |       0 |          2 |
+| 20 | Prof. Black (Foreign)   | foreign2_project2@example.com |            1 | +1234567822 |        2 | 2025-04-08 17:04:45.561550 | IDLE   |     0 |       0 |          2 |
+| 21 | Dr. Green (Foreign)     | foreign3_project2@example.com |            1 | +1234567833 |        3 | 2025-04-08 17:04:45.607664 | IDLE   |     0 |       0 |          2 |
+| 22 | Prof. Blue (Foreign)    | foreign4_project2@example.com |            1 | +1234567844 |        4 | 2025-04-08 17:04:45.639052 | IDLE   |     0 |       0 |          2 |
+| 23 | Dr. Gray (Foreign)      | foreign5_project2@example.com |            1 | +1234567855 |        5 | 2025-04-08 17:04:45.688473 | IDLE   |     0 |       0 |          2 |
+| 24 | Prof. Lee (Local)       | local1_project2@example.com   |            0 | +9876543211 |        1 | 2025-04-08 17:04:45.733349 | IDLE   |     0 |       0 |          2 |
+| 25 | Dr. King (Local)        | local2_project2@example.com   |            0 | +9876543222 |        2 | 2025-04-08 17:04:45.779188 | IDLE   |     0 |       0 |          2 |
+| 26 | Prof. Scott (Local)     | local3_project2@example.com   |            0 | +9876543233 |        3 | 2025-04-08 17:04:45.829233 | IDLE   |     0 |       0 |          2 |
+| 27 | Dr. Adams (Local)       | local4_project2@example.com   |            0 | +9876543244 |        4 | 2025-04-08 17:04:45.872906 | IDLE   |     0 |       0 |          2 |
+| 28 | Prof. Baker (Local)     | local5_project2@example.com   |            0 | +9876543255 |        5 | 2025-04-08 17:04:45.921730 | IDLE   |     0 |       0 |          2 |
++----+-------------------------+-------------------------------+--------------+-------------+----------+----------------------------+--------+-------+---------+------------+
+20 rows in set (0.00 sec)
+
+mysql> update projects_evaluator set last_sent_at = null;
+ERROR 1048 (23000): Column 'last_sent_at' cannot be null
+mysql> update projects_evaluator set last_sent_at = null;
+Query OK, 20 rows affected (0.01 sec)
+Rows matched: 20  Changed: 20  Warnings: 0
+
+mysql> select * from projects_evaluator;
++----+-------------------------+-------------------------------+--------------+-------------+----------+--------------+--------+-------+---------+------------+
+| id | name                    | email                         | foreign_viva | phone       | priority | last_sent_at | status | retry | is_viva | project_id |
++----+-------------------------+-------------------------------+--------------+-------------+----------+--------------+--------+-------+---------+------------+
+|  9 | Dr. Smith (Foreign)     | foreign1_project1@example.com |            1 | +1234567810 |        1 | NULL         | IDLE   |     0 |       0 |          1 |
+| 10 | Prof. Johnson (Foreign) | foreign2_project1@example.com |            1 | +1234567820 |        2 | NULL         | IDLE   |     0 |       0 |          1 |
+| 11 | Dr. Williams (Foreign)  | foreign3_project1@example.com |            1 | +1234567830 |        3 | NULL         | IDLE   |     0 |       0 |          1 |
+| 12 | Prof. Brown (Foreign)   | foreign4_project1@example.com |            1 | +1234567840 |        4 | NULL         | IDLE   |     0 |       0 |          1 |
+| 13 | Dr. Davis (Foreign)     | foreign5_project1@example.com |            1 | +1234567850 |        5 | NULL         | IDLE   |     0 |       0 |          1 |
+| 14 | Prof. Miller (Local)    | local1_project1@example.com   |            0 | +9876543210 |        1 | NULL         | IDLE   |     0 |       0 |          1 |
+| 15 | Dr. Wilson (Local)      | local2_project1@example.com   |            0 | +9876543220 |        2 | NULL         | IDLE   |     0 |       0 |          1 |
+| 16 | Prof. Moore (Local)     | local3_project1@example.com   |            0 | +9876543230 |        3 | NULL         | IDLE   |     0 |       0 |          1 |
+| 17 | Dr. Taylor (Local)      | local4_project1@example.com   |            0 | +9876543240 |        4 | NULL         | IDLE   |     0 |       0 |          1 |
+| 18 | Prof. Anderson (Local)  | local5_project1@example.com   |            0 | +9876543250 |        5 | NULL         | IDLE   |     0 |       0 |          1 |
+| 19 | Dr. White (Foreign)     | foreign1_project2@example.com |            1 | +1234567811 |        1 | NULL         | IDLE   |     0 |       0 |          2 |
+| 20 | Prof. Black (Foreign)   | foreign2_project2@example.com |            1 | +1234567822 |        2 | NULL         | IDLE   |     0 |       0 |          2 |
+| 21 | Dr. Green (Foreign)     | foreign3_project2@example.com |            1 | +1234567833 |        3 | NULL         | IDLE   |     0 |       0 |          2 |
+| 22 | Prof. Blue (Foreign)    | foreign4_project2@example.com |            1 | +1234567844 |        4 | NULL         | IDLE   |     0 |       0 |          2 |
+| 23 | Dr. Gray (Foreign)      | foreign5_project2@example.com |            1 | +1234567855 |        5 | NULL         | IDLE   |     0 |       0 |          2 |
+| 24 | Prof. Lee (Local)       | local1_project2@example.com   |            0 | +9876543211 |        1 | NULL         | IDLE   |     0 |       0 |          2 |
+| 25 | Dr. King (Local)        | local2_project2@example.com   |            0 | +9876543222 |        2 | NULL         | IDLE   |     0 |       0 |          2 |
+| 26 | Prof. Scott (Local)     | local3_project2@example.com   |            0 | +9876543233 |        3 | NULL         | IDLE   |     0 |       0 |          2 |
+| 27 | Dr. Adams (Local)       | local4_project2@example.com   |            0 | +9876543244 |        4 | NULL         | IDLE   |     0 |       0 |          2 |
+| 28 | Prof. Baker (Local)     | local5_project2@example.com   |            0 | +9876543255 |        5 | NULL         | IDLE   |     0 |       0 |          2 |
++----+-------------------------+-------------------------------+--------------+-------------+----------+--------------+--------+-------+---------+------------+
+20 rows in set (0.00 sec)
+
+mysql> select now()
+    -> ;
++---------------------+
+| now()               |
++---------------------+
+| 2025-04-09 22:27:26 |
++---------------------+
+1 row in set (0.00 sec)
+
+mysql> update projects_evaluator set last_sent_at = now() where id=9;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from projects_evaluator;
++----+-------------------------+-------------------------------+--------------+-------------+----------+----------------------------+--------+-------+---------+------------+
+| id | name                    | email                         | foreign_viva | phone       | priority | last_sent_at               | status | retry | is_viva | project_id |
++----+-------------------------+-------------------------------+--------------+-------------+----------+----------------------------+--------+-------+---------+------------+
+|  9 | Dr. Smith (Foreign)     | foreign1_project1@example.com |            1 | +1234567810 |        1 | 2025-04-09 22:27:48.000000 | IDLE   |     0 |       0 |          1 |
+| 10 | Prof. Johnson (Foreign) | foreign2_project1@example.com |            1 | +1234567820 |        2 | NULL                       | IDLE   |     0 |       0 |          1 |
+| 11 | Dr. Williams (Foreign)  | foreign3_project1@example.com |            1 | +1234567830 |        3 | NULL                       | IDLE   |     0 |       0 |          1 |
+| 12 | Prof. Brown (Foreign)   | foreign4_project1@example.com |            1 | +1234567840 |        4 | NULL                       | IDLE   |     0 |       0 |          1 |
+| 13 | Dr. Davis (Foreign)     | foreign5_project1@example.com |            1 | +1234567850 |        5 | NULL                       | IDLE   |     0 |       0 |          1 |
+| 14 | Prof. Miller (Local)    | local1_project1@example.com   |            0 | +9876543210 |        1 | NULL                       | IDLE   |     0 |       0 |          1 |
+| 15 | Dr. Wilson (Local)      | local2_project1@example.com   |            0 | +9876543220 |        2 | NULL                       | IDLE   |     0 |       0 |
+          1 |
+| 16 | Prof. Moore (Local)     | local3_project1@example.com   |            0 | +9876543230 |        3 | NULL                       | IDLE   |     0 |       0 |          1 |
+| 17 | Dr. Taylor (Local)      | local4_project1@example.com   |            0 | +9876543240 |        4 | NULL                       | IDLE   |     0 |       0 |          1 |
+| 18 | Prof. Anderson (Local)  | local5_project1@example.com   |            0 | +9876543250 |        5 | NULL                       | IDLE   |     0 |       0 |          1 |
+| 19 | Dr. White (Foreign)     | foreign1_project2@example.com |            1 | +1234567811 |        1 | NULL                       | IDLE   |     0 |       0 |          2 |
+| 20 | Prof. Black (Foreign)   | foreign2_project2@example.com |            1 | +1234567822 |        2 | NULL                       | IDLE   |     0 |       0 |          2 |
+| 21 | Dr. Green (Foreign)     | foreign3_project2@example.com |            1 | +1234567833 |        3 | NULL                       | IDLE   |     0 |       0 |          2 |
+| 22 | Prof. Blue (Foreign)    | foreign4_project2@example.com |            1 | +1234567844 |        4 | NULL                       | IDLE   |     0 |       0 |          2 |
+| 23 | Dr. Gray (Foreign)      | foreign5_project2@example.com |            1 | +1234567855 |        5 | NULL                       | IDLE   |     0 |       0 |          2 |
+| 24 | Prof. Lee (Local)       | local1_project2@example.com   |            0 | +9876543211 |        1 | NULL                       | IDLE   |     0 |       0 |          2 |
+| 25 | Dr. King (Local)        | local2_project2@example.com   |            0 | +9876543222 |        2 | NULL                       | IDLE   |     0 |       0 |          2 |
+| 26 | Prof. Scott (Local)     | local3_project2@example.com   |            0 | +9876543233 |        3 | NULL                       | IDLE   |     0 |       0 |          2 |
+| 27 | Dr. Adams (Local)       | local4_project2@example.com   |            0 | +9876543244 |        4 | NULL                       | IDLE   |     0 |       0 |          2 |
+| 28 | Prof. Baker (Local)     | local5_project2@example.com   |            0 | +9876543255 |        5 | NULL                       | IDLE   |     0 |       0 |          2 |
++----+-------------------------+-------------------------------+--------------+-------------+----------+----------------------------+--------+-------+---------+------------+
+20 rows in set (0.00 sec)
+
+mysql> update projects_evaluator set last_sent_at = null;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 20  Changed: 1  Warnings: 0
+
+mysql>

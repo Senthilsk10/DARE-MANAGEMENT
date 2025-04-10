@@ -1,0 +1,68 @@
+{% load i18n static %}
+
+<!-- Mobile sidebar backdrop (hidden by default) -->
+<div class="fixed inset-0 z-10 bg-gray-900 bg-opacity-50 lg:hidden hidden" id="sidebarBackdrop"></div>
+
+<!-- Mobile Sidebar (hidden on desktop by default) -->
+<div class="fixed inset-y-0 left-0 z-20 w-64 bg-white shadow-lg transform -translate-x-full lg:hidden transition-transform duration-300 ease-in-out" id="mobileSidebar">
+    <!-- Institution Logo and Name -->
+    <div class="flex flex-shrink-0 items-center px-6 py-4 border-b border-gray-200">
+        <img class="h-8 w-auto" src="{% static 'admin/img/icon-viewlink.svg' %}" alt="Institution Logo">
+        <span class="ml-2 text-xl font-bold text-gray-900">PhD Management</span>
+        <button class="ml-auto text-gray-500 hover:text-gray-600 focus:outline-none" id="closeSidebar">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    
+    <!-- Sidebar Navigation -->
+    <div class="mt-2 flex-1 flex flex-col overflow-y-auto">
+        <nav class="flex-1 px-2 space-y-1">
+            {% include 'partials/sidebar_items.html' %}
+        </nav>
+    </div>
+</div>
+
+<!-- Desktop Sidebar -->
+<div class="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-gray-200 lg:bg-white lg:pb-4 lg:pt-5">
+    <!-- Institution Logo and Name -->
+    <div class="flex flex-shrink-0 items-center px-6">
+        <img class="h-8 w-auto" src="{% static 'admin/img/icon-viewlink.svg' %}" alt="Institution Logo">
+        <span class="ml-2 text-xl font-bold text-gray-900">PhD Management</span>
+    </div>
+    
+    <!-- Sidebar Navigation -->
+    <div class="mt-6 flex h-0 flex-1 flex-col overflow-y-auto">
+        <nav class="flex-1 space-y-1 px-2">
+            {% include 'partials/sidebar_items.html' %}
+        </nav>
+    </div>
+</div>
+
+<script>
+    
+document.addEventListener('DOMContentLoaded', function() {
+    // Mobile sidebar elements
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+    const mobileSidebar = document.getElementById('mobileSidebar');
+    const closeSidebar = document.getElementById('closeSidebar');
+
+    // Toggle sidebar function
+    function toggleSidebar() {
+        mobileSidebar.classList.toggle('-translate-x-full');
+        sidebarBackdrop.classList.toggle('hidden');
+        document.body.classList.toggle('overflow-hidden');
+    }
+
+    // Event listeners
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', toggleSidebar);
+    }
+    if (sidebarBackdrop) {
+        sidebarBackdrop.addEventListener('click', toggleSidebar);
+    }
+    if (closeSidebar) {
+        closeSidebar.addEventListener('click', toggleSidebar);
+    }
+});
+</script>

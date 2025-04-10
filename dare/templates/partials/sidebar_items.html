@@ -1,0 +1,53 @@
+<!-- Dashboard -->
+<a href="#" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if request.resolver_match.url_name == 'dashboard' %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+    <i class="fas fa-tachometer-alt mr-3 flex-shrink-0"></i>
+    Dashboard
+</a>
+
+<!-- PhD Students -->
+<a href="#" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if 'phd_students' in request.resolver_match.url_name %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+    <i class="fas fa-user-graduate mr-3 flex-shrink-0"></i>
+    PhD Students
+</a>
+
+<!-- Supervisors -->
+<a href="#" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if 'supervisors' in request.resolver_match.url_name %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+    <i class="fas fa-chalkboard-teacher mr-3 flex-shrink-0"></i>
+    Supervisors
+</a>
+
+<!-- Projects -->
+<a href="#" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if 'projects' in request.resolver_match.url_name %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+    <i class="fas fa-project-diagram mr-3 flex-shrink-0"></i>
+    Research Projects
+</a>
+
+<!-- Departments -->
+<a href="#" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if 'departments' in request.resolver_match.url_name %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+    <i class="fas fa-building mr-3 flex-shrink-0"></i>
+    Departments
+</a>
+
+<!-- Mail Automation -->
+<a href="#" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if 'mail_automation' in request.resolver_match.url_name %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+    <i class="fas fa-envelope mr-3 flex-shrink-0"></i>
+    Mail Automation
+</a>
+
+<!-- Monitoring -->
+<a href="#" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if 'monitoring' in request.resolver_match.url_name %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+    <i class="fas fa-chart-line mr-3 flex-shrink-0"></i>
+    Progress Monitoring
+</a>
+
+<!-- Reports -->
+<a href="#" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if 'reports' in request.resolver_match.url_name %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+    <i class="fas fa-file-alt mr-3 flex-shrink-0"></i>
+    Reports
+</a>
+
+<!-- Settings -->
+<a href="#" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if 'settings' in request.resolver_match.url_name %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+    <i class="fas fa-cog mr-3 flex-shrink-0"></i>
+    Settings
+</a>

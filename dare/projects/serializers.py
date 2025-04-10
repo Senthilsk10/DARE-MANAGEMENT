@@ -1,4 +1,11 @@
-from rest_framework.serializers import ModelSerializer,PrimaryKeyRelatedField,SerializerMethodField
+from rest_framework.serializers import (
+    ModelSerializer,
+    PrimaryKeyRelatedField,
+    SerializerMethodField,
+    CharField,
+    Serializer
+    )
+from rest_framework import serializers
 from .models import Project,Synopsis,Evaluator
 from students.models import Student,Guide
 from .crypt import cipher
@@ -48,3 +55,33 @@ class EvaluatorSerializer(ModelSerializer):
     class Meta:
         model = Evaluator
         exclude = ('status','last_sent_at','retry')
+        
+        
+
+class MinimalMailToSendSerializer(serializers.Serializer):
+    # Project Fields
+    project_id = serializers.IntegerField(source='project.id')
+    project_title = serializers.CharField(source='project.title')
+    student_name = serializers.CharField(source='project.student.name')
+    student_roll = serializers.IntegerField(source='project.student.roll')
+    
+    # Evaluator Fields
+    evaluator_id = serializers.IntegerField()
+    evaluator_name = serializers.CharField()
+    evaluator_email = serializers.EmailField()
+    evaluator_priority = serializers.IntegerField(source='priority')
+    is_foreign = serializers.BooleanField(source='foreign_viva')
+    
+    # Mail Metadata
+    mail_type = serializers.CharField()
+    last_contact = serializers.DateTimeField(source='last_sent_at', required=False)
+    attempt_count = serializers.IntegerField(source='retry')
+    
+    # Derived Fields
+    email_subject = serializers.SerializerMethodField()
+    
+    def get_email_subject(self, obj):
+        return (
+            f"{obj['mail_type']}: Project Review - {obj['project'].title} "
+            f"(Priority {obj['evaluator'].priority})"
+        )

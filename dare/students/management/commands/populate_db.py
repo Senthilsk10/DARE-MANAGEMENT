@@ -1,13 +1,12 @@
 from django.core.management.base import BaseCommand
-from students.models import Student, Guide,Dept, Fees, Collection
+from students.models import Student, Guide,Dept, Fees, Collection,CustomUser
 from projects.models import Evaluator, Project, Synopsis
 from django.utils.timezone import now
-from django.contrib.auth.models import User 
 
 class Command(BaseCommand):
     help = "Populate the database with sample data"
     def handle(self, *args, **kwargs):
-        User.objects.create_superuser('admin', 'admin@example.com', 'admin')
+        CustomUser.objects.create_superuser('admin', 'admin@example.com', 'admin')
         # Create Departments
         cs_dept = Dept.objects.create(name="Computer Science", min_years=3, max_years=5)
         ec_dept = Dept.objects.create(name="Electronics", min_years=3, max_years=5)

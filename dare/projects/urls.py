@@ -12,6 +12,10 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path("webhook/synopsis",synopsis_webhook,name="synopsis-files"),
     path("webhook/project",project_webhook,name="project-files"),
-    path('project/<int:project_id>/', lambda request, project_id: render(request, "projects/project.html", {"project_id": project_id})),
-    path('view/file/<str:file_id>', lambda request, file_id: render(request, "iframe.html", {"file_id": file_id})),
+    path('projects/',projects,name="projects"),
+    path('project/<int:project_id>/',project_detail_view,name="project-info"),
+    path('api/mailtosend', MailToSendView.as_view(), name='mail_to_send'),
+    path("api/acknowledgemail",acknowledge_mail,name="mail-reciept"),
+    path("api/awaitingresponse",PendingEvaluatorsView.as_view(),name="mail-to-read"),
+    path("api/acknowledgeresponse",receive_email_responses,name="response-reciept"),
 ]

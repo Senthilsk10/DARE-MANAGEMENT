@@ -15,8 +15,8 @@ class Mail(models.Model):
     def __str__(self):
         return f"{self.content}"
 
-class Response(models.Model):
-    mail = models.ForeignKey(Mail, on_delete=models.CASCADE) # reply mail linking (work on what if we dont get mail and the user initiated it first)
+class Reply(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
     evaluator = models.ForeignKey(Evaluator, on_delete=models.CASCADE)
     response = models.TextField() # if subject is modify then get the required modfication, and file link from the repsonse using parse_function 
     attachments = models.JSONField(help_text="Attachment URLs stored as JSON list",default=list)

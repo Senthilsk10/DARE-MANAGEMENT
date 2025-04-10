@@ -1,238 +1,536 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Department Management</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-    <meta name="csrf-token" content="{{ csrf_token }}">
-</head>
-<body ng-app="DeptApp" ng-controller="DeptController">
-    <h1>Department Management - Dept ID: {{ dept_id }}</h1>
+{% extends 'base.html' %}
+{% load static %}
 
-    <!-- Student Addition Form -->
-    <h2>Add Student</h2>
-    <form ng-submit="addStudent()">
-        <input type="text" ng-model="newStudent.name" placeholder="Student Name" required>
-        <input type="number" ng-model="newStudent.roll" placeholder="Roll Number" required>
-        <input type="email" ng-model="newStudent.mail" placeholder="Email" required>
-        <input type="number" ng-model="newStudent.sem" placeholder="Semester" required>
-        <select ng-model="student.guide" ng-options="guide.id as guide.name for guide in guides" required>
-            <option value="">Select the Guide</option>
-        </select>
+{% block title %}Department Management{% endblock %}
 
-        <button type="submit">Add Student</button>
-    </form>
+{% block page_title %}Department Management - {{ dept_name }}{% endblock %}
 
-    <!-- Student Listing -->
-    <h2>Students</h2>
-    <table border="1">
-        <tr>
-            <th>Name</th>
-            <th>Roll</th>
-            <th>Semester</th>
-            <th>Email</th>
-            <th>Guide</th>
-            <th>Project</th>
-            <th>Actions</th>
-        </tr>
-        <tr ng-repeat="student in students">
-            <td><input ng-model="student.name"></td>
-            <td>[[student.roll]]</td>
-            <td><input ng-model="student.sem" type="number"></td>
-            <td><input ng-model="student.mail" type="email"></td>
-            <td>
-                <select ng-model="student.guide" ng-options="guide.id as guide.name for guide in guides" required >
-                </select>
-            </td>
-            <td><a href="[['/project/'+student.active_project.id]]">visit</a></td>
-            <td>
-                <button ng-click="updateStudent(student)">Update</button>
-                <button ng-click="deleteStudent(student.id)">Delete</button>
-            </td>
-        </tr>
-    </table>
+{% block extra_head %}
+<style>
+    /* Tab styling */
+    .tab-container {
+        margin-bottom: 2rem;
+    }
+    
+    .tabs {
+        display: flex;
+        border-bottom: 1px solid #e2e8f0;
+        margin-bottom: 1.5rem;
+    }
+    
+    .tab {
+        padding: 0.75rem 1.5rem;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
+    }
+    
+    .tab:hover {
+        background-color: #f7fafc;
+    }
+    
+    .tab.active {
+        border-bottom-color: #4299e1;
+        color: #4299e1;
+        font-weight: 500;
+    }
+    
+    .tab-content {
+        display: none;
+    }
+    
+    .tab-content.active {
+        display: block;
+    }
+    
+    /* Form styling */
+    .form-card {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    /* Table styling */
+    .table-responsive {
+        overflow-x: auto;
+    }
+    
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: white;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    }
+    
+    .data-table th, .data-table td {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .data-table th {
+        background-color: #f7fafc;
+        font-weight: 600;
+        color: #4a5568;
+    }
+    
+    .data-table tr:hover {
+        background-color: #f7fafc;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    /* Input styling */
+    .input-field {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.375rem;
+        transition: border-color 0.2s;
+    }
+    
+    .input-field:focus {
+        outline: none;
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+    }
+    
+    .select-field {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.375rem;
+        background-color: white;
+    }
+    
+    /* Button styling */
+    .btn {
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-primary {
+        background-color: #4299e1;
+        color: white;
+        border: none;
+    }
+    
+    .btn-primary:hover {
+        background-color: #3182ce;
+    }
+    
+    .btn-secondary {
+        background-color: #e2e8f0;
+        color: #4a5568;
+        border: none;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #cbd5e0;
+    }
+    
+    .btn-danger {
+        background-color: #f56565;
+        color: white;
+        border: none;
+    }
+    
+    .btn-danger:hover {
+        background-color: #e53e3e;
+    }
+    
+    .btn-success {
+        background-color: #48bb78;
+        color: white;
+        border: none;
+    }
+    
+    .btn-success:hover {
+        background-color: #38a169;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
 
+<script>
+    var app = angular.module('DeptApp', []);
+    app.config(function($interpolateProvider) {
+        $interpolateProvider.startSymbol('[[');
+        $interpolateProvider.endSymbol(']]');
+    });
+    app.config(['$httpProvider', function($httpProvider) {
+        $httpProvider.defaults.headers.common['X-CSRFToken'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    }]);
 
-    <!-- Guide Addition Form -->
-    <h2>Add Guides</h2>
-    <form ng-submit="addGuide()">
-        <input type="text" ng-model="newGuide.name" placeholder="Name" required>
-        <input type="email" ng-model="newGuide.email" placeholder="Email" required>
-        <input type="text" ng-model="newGuide.phone" placeholder="phone" required>
-        <button type="submit">Add Guide</button>
-    </form>
-
-     <!-- Fee Listing -->
-     <h2>Fees</h2>
-     <table border="1">
-         <tr>
-             <th>Name</th>
-             <th>Email</th>
-             <th>Phone</th>
-         </tr>
-         <tr ng-repeat="guide in guides">
-             <td><input ng-model="guide.name" type="text"></td>
-             <td><input ng-model="guide.email" type="email"></td>
-             <td><input ng-model="guide.phone" type="text"></td>
-             <td>
-                 <button ng-click="updateGuide(guide)">Update</button>
-                 <button ng-click="deleteGuide(guide.id)">Delete</button>
-             </td>
-         </tr>
-     </table>
-
-    <!-- Fee Addition Form -->
-    <h2>Add Fee</h2>
-    <form ng-submit="addFee()">
-        <input type="number" ng-model="newFee.sem" placeholder="Semester" required>
-        <input type="number" ng-model="newFee.fees" placeholder="Fees Amount" required>
-        <button type="submit">Add Fee</button>
-    </form>
-
-    <!-- Fee Listing -->
-    <h2>Fees</h2>
-    <table border="1">
-        <tr>
-            <th>Semester</th>
-            <th>Fees</th>
-            <th>Actions</th>
-        </tr>
-        <tr ng-repeat="fee in fees">
-            <td>[[ fee.sem ]]</td>
-            <td><input ng-model="fee.fees" type="number"></td>
-            <td>
-                <button ng-click="updateFee(fee)">Update</button>
-                <button ng-click="deleteFee(fee.id)">Delete</button>
-            </td>
-        </tr>
-    </table>
-
-    <script>
-        var app = angular.module('DeptApp', []);
-        app.config(function($interpolateProvider) {
-            $interpolateProvider.startSymbol('[[');
-            $interpolateProvider.endSymbol(']]');
-        });
-        app.config(['$httpProvider', function($httpProvider) {
-            $httpProvider.defaults.headers.common['X-CSRFToken'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        }]);
-
-        app.controller('DeptController', function($scope, $http, $location) {
-            var dept_api = "/api/depts/";
-            var student_api = "/api/students/";
-            var guide_api = "/api/guides/";
-            var fees_api = "/api/fees/";
-            $scope.students = [];
-            $scope.guides = [];
-            $scope.fees = [];
-            $scope.newStudent = {};
-            $scope.newGuide = {};
-            $scope.newFee = {};
-
-            
-            // Get department ID from URL
-            var pathParts = window.location.pathname.split('/');
-            $scope.dept_id = pathParts[pathParts.length - 2]; // Extract dept_id from URL
-
-            // Load students and fees
-            function loadDeptData() {
-                if (!$scope.dept_id) return;
-                
-                // Load students
-                $http.get(student_api + "?dept=" + $scope.dept_id).then(function(response) {
-                    $scope.students = response.data;
-                    console.log(response.data);
-                });
-
-                // Load fees
-                $http.get(fees_api + "?dept=" + $scope.dept_id).then(function(response) {
-                    $scope.fees = response.data;
-                });
-                // Load guides
-                $http.get(guide_api + "?dept=" + $scope.dept_id).then(function(response) {
-                    $scope.guides = response.data;
-                });
-
+    app.controller('DeptController', function($scope, $http, $location, $window) {
+        var dept_api = "/api/depts/";
+        var student_api = "/api/students/";
+        var guide_api = "/api/guides/";
+        var fees_api = "/api/fees/";
+        
+        $scope.students = [];
+        $scope.guides = [];
+        $scope.fees = [];
+        $scope.newStudent = {};
+        $scope.newGuide = {};
+        $scope.newFee = {};
+        $scope.activeTab = 'students';
+        
+        // Get department ID from URL
+        var pathParts = $window.location.pathname.split('/');
+        $scope.dept_id = pathParts[pathParts.length - 2]; // Extract dept_id from URL
+        
+        // Handle tab changes from URL hash
+        $scope.$watch(function() {
+            return $window.location.hash;
+        }, function(hash) {
+            if (hash) {
+                var tab = hash.substring(1);
+                if (['students', 'guides', 'fees'].includes(tab)) {
+                    $scope.activeTab = tab;
+                }
             }
-
-            loadDeptData(); // Auto-load data when the page loads
-
-            // Add Student
-            $scope.addStudent = function() {
-                $scope.newStudent.dept = $scope.dept_id;
-                $http.post(student_api, $scope.newStudent).then(function(response) {
-                    $scope.students.push(response.data);
-                    $scope.newStudent = {};
-                });
-            };
-
-            // Update Student
-            $scope.updateStudent = function(student) {
-                $http.put(student_api + student.id + "/", student).then(function() {
-                    alert("Student Updated!");
-                });
-            };
-
-            // Delete Student
-            $scope.deleteStudent = function(id) {
-                if (confirm("Are you sure?")) {
-                    $http.delete(student_api + id + "/").then(function() {
-                        loadDeptData();
-                    });
-                }
-            };
-            
-            // Add Guide
-            $scope.addGuide = function() {
-                $scope.newGuide.dept = $scope.dept_id;
-                $http.post(guide_api, $scope.newGuide).then(function(response) {
-                    $scope.guides.push(response.data);
-                    $scope.newGuide = {};
-                });
-            };
-
-            // Update Guide
-            $scope.updateGuide = function(guide) {
-                $http.put(guide_api + guide.id + "/", guide).then(function() {
-                    alert("guide Updated!");
-                });
-            };
-
-            // Delete Guide
-            $scope.deleteGuide = function(id) {
-                if (confirm("Are you sure?")) {
-                    $http.delete(guide_api + id + "/").then(function() {
-                        loadDeptData();
-                    });
-                }
-            };
-
-            // Add Fee
-            $scope.addFee = function() {
-                $scope.newFee.dept = $scope.dept_id;
-                $http.post(fees_api, $scope.newFee).then(function(response) {
-                    $scope.fees.push(response.data);
-                    $scope.newFee = {};
-                });
-            };
-
-            // Update Fee
-            $scope.updateFee = function(fee) {
-                $http.put(fees_api + fee.id + "/", fee).then(function() {
-                    alert("Fee Updated!");
-                });
-            };
-
-            // Delete Fee
-            $scope.deleteFee = function(id) {
-                if (confirm("Are you sure?")) {
-                    $http.delete(fees_api + id + "/").then(function() {
-                        loadDeptData();
-                    });
-                }
-            };
         });
-    </script>
-</body>
-</html>
+        
+        $scope.changeTab = function(tab) {
+            $scope.activeTab = tab;
+            $window.location.hash = tab;
+        };
+        
+        // Load students and fees
+        function loadDeptData() {
+            if (!$scope.dept_id) return;
+            
+            // Load students
+            $http.get(student_api + "?dept=" + $scope.dept_id).then(function(response) {
+                $scope.students = response.data;
+            });
+            
+            // Load fees
+            $http.get(fees_api + "?dept=" + $scope.dept_id).then(function(response) {
+                $scope.fees = response.data;
+            });
+            
+            // Load guides
+            $http.get(guide_api + "?dept=" + $scope.dept_id).then(function(response) {
+                $scope.guides = response.data;
+            });
+        }
+        
+        // Initialize with correct tab based on URL hash
+        if ($window.location.hash) {
+            var tab = $window.location.hash.substring(1);
+            if (['students', 'guides', 'fees'].includes(tab)) {
+                $scope.activeTab = tab;
+            }
+        }
+        
+        loadDeptData(); // Auto-load data when the page loads
+        
+        // Student functions
+        $scope.addStudent = function() {
+            $scope.newStudent.dept = $scope.dept_id;
+            $http.post(student_api, $scope.newStudent).then(function(response) {
+                $scope.students.push(response.data);
+                $scope.newStudent = {};
+            });
+        };
+        
+        $scope.updateStudent = function(student) {
+            $http.put(student_api + student.id + "/", student).then(function() {
+                alert("Student Updated!");
+            });
+        };
+        
+        $scope.deleteStudent = function(id) {
+            if (confirm("Are you sure you want to delete this student?")) {
+                $http.delete(student_api + id + "/").then(function() {
+                    loadDeptData();
+                });
+            }
+        };
+        
+        // Guide functions
+        $scope.addGuide = function() {
+            $scope.newGuide.dept = $scope.dept_id;
+            $http.post(guide_api, $scope.newGuide).then(function(response) {
+                $scope.guides.push(response.data);
+                $scope.newGuide = {};
+            });
+        };
+        
+        $scope.updateGuide = function(guide) {
+            $http.put(guide_api + guide.id + "/", guide).then(function() {
+                alert("Guide Updated!");
+            });
+        };
+        
+        $scope.deleteGuide = function(id) {
+            if (confirm("Are you sure you want to delete this guide?")) {
+                $http.delete(guide_api + id + "/").then(function() {
+                    loadDeptData();
+                });
+            }
+        };
+        
+        // Fee functions
+        $scope.addFee = function() {
+            $scope.newFee.dept = $scope.dept_id;
+            $http.post(fees_api, $scope.newFee).then(function(response) {
+                $scope.fees.push(response.data);
+                $scope.newFee = {};
+            });
+        };
+        
+        $scope.updateFee = function(fee) {
+            $http.put(fees_api + fee.id + "/", fee).then(function() {
+                alert("Fee Updated!");
+            });
+        };
+        
+        $scope.deleteFee = function(id) {
+            if (confirm("Are you sure you want to delete this fee?")) {
+                $http.delete(fees_api + id + "/").then(function() {
+                    loadDeptData();
+                });
+            }
+        };
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8" ng-app="DeptApp" ng-controller="DeptController">
+    <!-- Tab Navigation -->
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab" ng-class="{ 'active': activeTab === 'students' }" ng-click="changeTab('students')">
+                Students
+            </div>
+            <div class="tab" ng-class="{ 'active': activeTab === 'guides' }" ng-click="changeTab('guides')">
+                Guides
+            </div>
+            <div class="tab" ng-class="{ 'active': activeTab === 'fees' }" ng-click="changeTab('fees')">
+                Fees
+            </div>
+        </div>
+    </div>
+    
+    <!-- Students Tab -->
+    <div class="tab-content" ng-class="{ 'active': activeTab === 'students' }">
+        <!-- Add Student Form -->
+        <div class="form-card">
+            <h2 class="text-xl font-semibold mb-4">Add Student</h2>
+            <form ng-submit="addStudent()">
+                <div class="form-grid">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Student Name</label>
+                        <input type="text" ng-model="newStudent.name" placeholder="Student Name" required class="input-field">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Roll Number</label>
+                        <input type="number" ng-model="newStudent.roll" placeholder="Roll Number" required class="input-field">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" ng-model="newStudent.mail" placeholder="Email" required class="input-field">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Semester</label>
+                        <input type="number" ng-model="newStudent.sem" placeholder="Semester" required class="input-field">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Guide</label>
+                        <select ng-model="newStudent.guide" ng-options="guide.id as guide.name for guide in guides" required class="select-field">
+                            <option value="">Select Guide</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Add Student</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Students Table -->
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <h2 class="text-xl font-semibold mb-4 px-6 pt-4">Students</h2>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Roll</th>
+                            <th>Semester</th>
+                            <th>Email</th>
+                            <th>Guide</th>
+                            <th>Project</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="student in students">
+                            <td><input ng-model="student.name" class="input-field"></td>
+                            <td>[[ student.roll ]]</td>
+                            <td><input ng-model="student.sem" type="number" class="input-field"></td>
+                            <td><input ng-model="student.mail" type="email" class="input-field"></td>
+                            <td>
+                                <select ng-model="student.guide" ng-options="guide.id as guide.name for guide in guides" class="select-field">
+                                    <option value="">Select Guide</option>
+                                </select>
+                            </td>
+                            <td>
+                                <a ng-if="student.active_project.id" ng-href="[['/project/'+student.active_project.id]]" class="text-blue-500 hover:underline">View</a>
+                                <span ng-if="!student.active_project.id">None</span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button ng-click="updateStudent(student)" class="btn btn-success">Update</button>
+                                    <button ng-click="deleteStudent(student.id)" class="btn btn-danger">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Guides Tab -->
+    <div class="tab-content" ng-class="{ 'active': activeTab === 'guides' }">
+        <!-- Add Guide Form -->
+        <div class="form-card">
+            <h2 class="text-xl font-semibold mb-4">Add Guide</h2>
+            <form ng-submit="addGuide()">
+                <div class="form-grid">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                        <input type="text" ng-model="newGuide.name" placeholder="Name" required class="input-field">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" ng-model="newGuide.email" placeholder="Email" required class="input-field">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                        <input type="text" ng-model="newGuide.phone" placeholder="Phone" required class="input-field">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Add Guide</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Guides Table -->
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <h2 class="text-xl font-semibold mb-4 px-6 pt-4">Guides</h2>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="guide in guides">
+                            <td><input ng-model="guide.name" type="text" class="input-field"></td>
+                            <td><input ng-model="guide.email" type="email" class="input-field"></td>
+                            <td><input ng-model="guide.phone" type="text" class="input-field"></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button ng-click="updateGuide(guide)" class="btn btn-success">Update</button>
+                                    <button ng-click="deleteGuide(guide.id)" class="btn btn-danger">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Fees Tab -->
+    <div class="tab-content" ng-class="{ 'active': activeTab === 'fees' }">
+        <!-- Add Fee Form -->
+        <div class="form-card">
+            <h2 class="text-xl font-semibold mb-4">Add Fee</h2>
+            <form ng-submit="addFee()">
+                <div class="form-grid">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Semester</label>
+                        <input type="number" ng-model="newFee.sem" placeholder="Semester" required class="input-field">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fees Amount</label>
+                        <input type="number" ng-model="newFee.fees" placeholder="Fees Amount" required class="input-field">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Add Fee</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Fees Table -->
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <h2 class="text-xl font-semibold mb-4 px-6 pt-4">Fees</h2>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Semester</th>
+                            <th>Fees</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="fee in fees">
+                            <td>[[ fee.sem ]]</td>
+                            <td><input ng-model="fee.fees" type="number" class="input-field"></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button ng-click="updateFee(fee)" class="btn btn-success">Update</button>
+                                    <button ng-click="deleteFee(fee.id)" class="btn btn-danger">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
